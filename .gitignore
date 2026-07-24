@@ -1,0 +1,23 @@
+# Klipper / Moonraker / Mainsail noise
+*.log
+*.bak
+*.backup
+*.bkp
+*.tmp
+*.old
+
+# Printer data folders you don't want in Git
+printer_data/logs/
+printer_data/comms/
+printer_data/gcodes/
+printer_data/systemd/
+printer_data/database/
+printer_data/config/backups/
+
+# Mainsail / Fluidd cache
+*.db
+*.sqlite
+
+# Python cache
+__pycache__/
+*.pyc
