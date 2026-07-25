@@ -1,55 +1,22 @@
-# TODO
+## Phase 2 - Calibration
 
-## High Priority
+High Priority
 
-☐ Rebuild motion.cfg
-☐ Verify X axis
-☐ Verify Y axis
-☐ Verify Z axis
-☐ Verify extruder
+- PROBE_CALIBRATE
+- SAVE_CONFIG
+- PID tune hotend
+- PID tune heated bed
+- Configure bed mesh
+- Extruder rotation distance
+- First PLA calibration cube
 
-☐ Configure CR Touch
-☐ Verify probe operation
+Medium Priority
 
-☐ Configure thermistors
-☐ Verify temperatures
+- Flow calibration
+- Temperature tower
+- Retraction tuning
 
-☐ Configure heaters
-☐ PID tune hotend
-☐ PID tune bed
+Future
 
-☐ Configure fans
-
-☐ Configure LCD
-
-☐ Configure filament sensor
-
-## Calibration
-
-☐ Extruder rotation distance
-
-☐ Probe offsets
-
-☐ Bed mesh
-
-☐ Pressure advance
-
-☐ Input shaping
-
-## Future
-
-☐ Dragonfly hotend
-
-☐ Hero Me Gen6
-
-☐ PEI sheet
-
-☐ Chamber sensor
-
-☐ Nevermore filter
-
-☐ Moonraker PSU relay
-
-☐ Automatic backups
-
-☐ GitHub Actions config validation
+- Pressure Advance
+- Input Shaper

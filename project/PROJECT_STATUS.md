@@ -1,64 +1,29 @@
-# Project Status
+## Firmware
 
-Version
--------
-v1.0.0 (Commissioning)
+✅ Klipper
 
-Current Stage
--------------
-Hardware Commissioning
+✅ Motion
 
-Completed
----------
-✔ Raspberry Pi 4 installed
-✔ Debian 13 installed
-✔ Klipper installed
-✔ Moonraker installed
-✔ Mainsail installed
-✔ KlipperScreen installed
-✔ Crowsnest installed
+✅ Homing
 
-✔ SKR Mini E3 V3 installed
-✔ Firmware compiled
-✔ Firmware flashed
-✔ USB communication verified
+⬜ Z Offset
 
-✔ Modular configuration structure created
+⬜ Bed Mesh
 
-✔ Git repository initialised
+⬜ Pressure Advance
 
-Current Hardware
-----------------
-Printer:
-Ender 5 Pro
+⬜ Input Shaper
 
-Controller:
-BTT SKR Mini E3 V3
+---
 
-Probe:
-CR Touch
+## Printing
 
-Filament Sensor:
-BTT Smart Filament Sensor
+⬜ First PLA print
 
-Extruder:
-Creality metal extruder
-Unitak3D direct-drive bracket
-RTelligent 42Ncm motor
+⬜ Temperature tower
 
-Hotend:
-Stock Creality
+⬜ Calibration cube
 
-Bed:
-Glass
+⬜ ABS profile
 
-Enclosure:
-Aluminium extrusion enclosure
-
-Known Issues
-------------
-Motion configuration currently being rebuilt from official Klipper reference configurations.
-
-Next Milestone
---------------
-Complete motion subsystem.
+⬜ PETG profile

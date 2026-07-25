@@ -14,3 +14,27 @@ Changed
 Planned
 
 - Motion commissioning
+
+## 2026-07-25
+
+### Added
+
+- Modular hardware configuration
+- Dedicated extruder.cfg
+- SSH Git workflow
+- Commissioning documentation
+- Hardware documentation
+- Known issues documentation
+
+### Changed
+
+- Corrected Y motor direction
+- Corrected Z motor direction
+- Measured CR Touch offsets
+- Updated safe_z_home coordinates
+- Reduced stock hotend maximum temperature to 250°C
+
+### Fixed
+
+- Successful G28 homing
+- Correct CR Touch operation
