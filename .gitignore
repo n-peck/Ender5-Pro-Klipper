@@ -21,3 +21,6 @@ printer_data/config/backups/
 # Python cache
 __pycache__/
 *.pyc
+
+#AI Chat context info
+project/context/
