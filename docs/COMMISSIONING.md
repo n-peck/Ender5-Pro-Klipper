@@ -1,124 +1,195 @@
-# Commissioning Log
+# Ender 5 Pro Commissioning Log
 
-## Session 1
+This document records the commissioning, calibration and validation of the printer.
 
-### Motion
-
-Verified all axes move correctly.
-
-Final direction configuration:
-
-- X: unchanged
-- Y: dir_pin: PB2
-- Z: dir_pin: !PC5
-
-Motion limits currently:
-
-- Max velocity: 300 mm/s
-- Max acceleration: 3000 mm/s²
-- Max Z velocity: 15 mm/s
-- Max Z acceleration: 100 mm/s²
+Hardware installation history is recorded separately in `CHANGELOG.md`.
 
 ---
 
-### CR Touch
+# Session 1 – Initial Bring-up
 
-Measured probe offsets.
+Date: 2026-07
 
-Final values:
+## Firmware
 
-x_offset: -44
-y_offset: -9
-
-Probe repeatability settings:
-
-- samples = 3
-- samples_result = median
-- samples_tolerance = 0.02
+- Klipper installed
+- Moonraker installed
+- Mainsail configured
+- KlipperScreen installed
+- Repository structure created
+- Configuration modularised
 
 ---
 
-### Safe Z Home
+## Motion System
 
-Observed behaviour:
+### Verification
 
-Klipper development build:
+| Test | Result |
+|------|--------|
+| X Axis | PASS |
+| Y Axis | PASS |
+| Z Axis | PASS |
 
-v0.13.0-707-gf604aeee
+### Final Motor Configuration
 
-did not automatically compensate BLTouch offsets when using safe_z_home.
+| Axis | Configuration |
+|------|---------------|
+| X | Default |
+| Y | `dir_pin: PB2` |
+| Z | `dir_pin: !PC5` |
 
-Required configuration:
+---
 
+## Motion Limits
+
+Safe commissioning limits configured.
+
+| Parameter | Value |
+|----------|------:|
+| Max Velocity | 300 mm/s |
+| Max Acceleration | 3000 mm/s² |
+| Max Z Velocity | 15 mm/s |
+| Max Z Acceleration | 100 mm/s² |
+| Square Corner Velocity | 5 mm/s |
+| Minimum Cruise Ratio | 0.5 |
+
+These values are intentionally conservative and will be increased after resonance testing.
+
+---
+
+## CR Touch
+
+### Probe Offset
+
+Measured nozzle-to-probe offsets.
+
+| Parameter | Value |
+|----------|------:|
+| X Offset | -44 mm |
+| Y Offset | -9 mm |
+
+### Repeatability
+
+| Setting | Value |
+|---------|------:|
+| Samples | 3 |
+| Result | Median |
+| Tolerance | 0.02 mm |
+| Retries | 3 |
+
+---
+
+## Safe Z Homing
+
+### Verification
+
+`G28`
+
+**PASS**
+
+### Observation
+
+Printer firmware:
+
+```
+Klipper v0.13.0-707-gf604aeee
+```
+
+did **not** automatically compensate for the configured BLTouch XY offsets when using `safe_z_home`.
+
+Correct operation required:
+
+```
 home_xy_position: 66,101
+```
 
-This positions the probe at the physical bed centre.
+This places the probe at the physical bed centre (110,110).
 
-This behaviour should be revalidated after future Klipper upgrades.
+This behaviour should be revalidated following future Klipper upgrades.
 
 ---
 
-### Git
+## Git Repository
 
-Repository now used as source of truth.
-
-Pi authenticates to GitHub using SSH keys.
+Repository adopted as the project's single source of truth.
 
 Workflow:
 
+```
 git pull
 edit
 git commit
 git push
+```
 
-## Motion Commissioning
-
-Verified
-
-- X movement
-- Y movement
-- Z movement
-
-Final motor directions
-
-Y
-
-dir_pin: PB2
-
-Z
-
-dir_pin: !PC5
+SSH authentication configured and verified.
 
 ---
 
-## Probe Commissioning
+# Session 2 – Repository Refactor
 
-Measured offsets
+Configuration reorganised into logical groups.
 
-X = -44
+```
+hardware/
+machine/
+calibration/
+```
 
-Y = -9
+## Hardware
 
-Probe repeatability
+Electrical configuration only.
 
-samples = 3
+## Machine
 
-median
+Physical printer geometry and operating limits.
 
-tolerance = 0.02
+## Calibration
+
+Generated calibration values only.
+
+This structure separates permanent hardware configuration from values expected to change during printer tuning.
 
 ---
 
-## Homing
+# Session 3 – CR Touch Z Calibration
 
-G28
+## Probe Calibration
 
-PASS
+`PROBE_CALIBRATE`
 
-Notes
+Measured probe offset:
 
-safe_z_home required nozzle coordinates:
+```
+z_offset: 0.390
+```
 
-66,101
+Result committed to:
 
-to place the probe over bed centre.
+```
+calibration/probe.cfg
+```
+
+### Notes
+
+Probe calibration completed successfully.
+
+First-layer validation still required during initial print calibration.
+
+---
+
+# Future Commissioning
+
+- [ ] Hotend PID
+- [ ] Bed PID
+- [ ] Bed Mesh
+- [ ] Extruder Rotation Distance
+- [ ] PLA Calibration Cube
+- [ ] Flow Calibration
+- [ ] Temperature Tower
+- [ ] Retraction Calibration
+- [ ] Pressure Advance
+- [ ] Input Shaper
+- [ ] Performance Limit Optimisation
+- [ ] ABS Validation
