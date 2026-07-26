@@ -1,8 +1,26 @@
+from dataclasses import dataclass, field
 from pathlib import Path
 from datetime import datetime
 import subprocess
 
-from pathlib import Path
+@dataclass
+class RepoFile:
+    name: str
+    path: Path
+    relative: Path
+    category: str
+    lines: int
+    headings: list[str] = field(default_factory=list)
+    modified: datetime = None
+    text: str = ""
+
+@dataclass
+class Repository:
+    docs: list[RepoFile] = field(default_factory=list)
+    hardware: list[RepoFile] = field(default_factory=list)
+    machine: list[RepoFile] = field(default_factory=list)
+    calibration: list[RepoFile] = field(default_factory=list)
+    macros: list[RepoFile] = field(default_factory=list)
 
 def find_repo_root():
     """
@@ -30,6 +48,14 @@ OUTPUT_DIR = REPO_ROOT / "project" / "context"
 DOCS_DIR = REPO_ROOT / "docs"
 PROJECT_DIR = REPO_ROOT / "project"
 CONFIG_DIR = REPO_ROOT
+
+ROOT_FOLDERS = {
+    "docs": ("docs", "*.md"),
+    "hardware": ("hardware", "*.cfg"),
+    "machine": ("machine", "*.cfg"),
+    "calibration": ("calibration", "*.cfg"),
+    "macros": ("macros", "*.cfg"),
+}
 
 def get_timestamp():
     """Return generation timestamp."""
@@ -96,15 +122,77 @@ def get_git_commit():
     return run_git(["git", "rev-parse", "--short", "HEAD"])
 
 def scan_repository():
-    """Collect repository file lists."""
+    """
+    Scan the repository and return a Repository object.
+    """
 
-    return {
-        "docs": sorted(DOCS_DIR.glob("*.md")),
-        "hardware": sorted((CONFIG_DIR / "hardware").glob("*.cfg")),
-        "machine": sorted((CONFIG_DIR / "machine").glob("*.cfg")),
-        "calibration": sorted((CONFIG_DIR / "calibration").glob("*.cfg")),
-        "macros": sorted((CONFIG_DIR / "macros").glob("*.cfg")),
-    }
+    repo = Repository()
+
+    for category, (folder_name, pattern) in ROOT_FOLDERS.items():
+
+        folder = REPO_ROOT / folder_name
+
+        if not folder.exists():
+            continue
+
+        for file in sorted(folder.glob(pattern)):
+
+            text = read_file(file)
+            lines = text.splitlines()
+
+            headings = [
+                line.lstrip("# ").strip()
+                for line in lines
+                if line.startswith("#")
+            ]
+
+            entry = RepoFile(
+                name=file.name,
+                path=file,
+                relative=file.relative_to(REPO_ROOT),
+                category=category,
+                lines=len(lines),
+                headings=headings,
+                modified=datetime.fromtimestamp(file.stat().st_mtime),
+                text=text,
+            )
+
+            getattr(repo, category).append(entry)
+
+    return repo
+
+def build_manifest(repo):
+    """
+    Build a project manifest.
+    """
+
+    output = []
+
+    output.append("# Project Manifest")
+    output.append("")
+    output.append(f"Generated: {get_timestamp()}")
+    output.append("")
+    output.append("## Documentation")
+
+    for doc in repo.docs:
+        status = "⚠ Empty" if doc.lines == 0 else "✓"
+
+        output.append(
+            f"- {doc.name} ({doc.lines} lines) {status}"
+        )
+
+    output.append("")
+    output.append("## Configuration")
+
+    for section in ("hardware", "machine", "calibration", "macros"):
+
+        output.append("")
+        output.append(f"### {section.title()}")
+
+        for cfg in getattr(repo, section):
+            output.append(f"- {cfg.name}")
+
+    return "\n".join(output)
 
 def main():
 
@@ -122,11 +210,11 @@ def main():
 
     print(f"Repository Root : {REPO_ROOT}")
     print(f"Templates       : {len(templates)}")
-    print(f"Documentation   : {len(repo['docs'])}")
-    print(f"Hardware Config : {len(repo['hardware'])}")
-    print(f"Machine Config  : {len(repo['machine'])}")
-    print(f"Calibration     : {len(repo['calibration'])}")
-    print(f"Macros          : {len(repo['macros'])}")
+    print(f"Documentation   : {len(repo.docs)}")
+    print(f"Hardware Config : {len(repo.hardware)}")
+    print(f"Machine Config  : {len(repo.machine)}")
+    print(f"Calibration     : {len(repo.calibration)}")
+    print(f"Macros          : {len(repo.macros)}")
 
     print("\nGit")
 
@@ -142,6 +230,12 @@ def main():
     print(f"macros       : {(CONFIG_DIR / 'macros').exists()}")
 
     print("\nContext generator initialisation successful.")
+
+    manifest = build_manifest(repo)
+
+    print()
+    print("=" * 60)
+    print(manifest)
 
 if __name__ == "__main__":
     main()
