@@ -1,12 +1,14 @@
 ## Firmware
 
-✅ Klipper
+✅ Klipper - DONE
 
-✅ Motion
+✅ Motion - DONE
 
-✅ Homing
+✅ Homing - DONE
 
-⬜ Z Offset
+✅ Z Offset - DONE
+
+⬜ PID Attributes
 
 ⬜ Bed Mesh
 
