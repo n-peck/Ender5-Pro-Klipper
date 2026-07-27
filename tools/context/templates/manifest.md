@@ -2,6 +2,28 @@
 
 Generated: {{generated}}
 
+Repository Root: {{repository_root}}
+
 ---
 
-{{manifest}}
+## Repository Statistics
+
+{{repository_statistics}}
+
+---
+
+## Repository Structure
+
+{{repository_structure}}
+
+---
+
+## Documentation
+
+{{documentation}}
+
+---
+
+## Configuration
+
+{{configuration}}

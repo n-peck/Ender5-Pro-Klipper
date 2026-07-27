@@ -1,69 +1,49 @@
-# Ender 5 Pro - AI Session Context
+# Ender 5 Pro Session Context
 
 Generated: {{generated}}
 
----
+Repository:
 
-# Project
-
-{{project_summary}}
+{{repository}}
 
 ---
 
-# Repository Architecture
+## Current Hardware
 
-{{architecture}}
-
----
-
-# Documentation
-
-{{documentation}}
+{{hardware}}
 
 ---
 
-# Current Status
+## Commissioning Status
 
-{{current_status}}
-
----
-
-# Current Session
-
-{{current_session}}
+{{commissioning}}
 
 ---
 
-# Active TODO
+## Calibration Status
 
-{{todo}}
+{{calibration}}
 
 ---
 
-# Known Issues
+## Known Issues
 
 {{known_issues}}
 
 ---
 
-# Hardware Summary
+## Recent Changes
 
-{{hardware_summary}}
-
----
-
-# Configuration Summary
-
-{{configuration_summary}}
+{{changelog}}
 
 ---
 
-# Recent Git Activity
+## Recent Git History
 
 {{git_history}}
 
 ---
 
-# AI Briefing
+## AI Briefing
 
 {{briefing}}
