@@ -89,6 +89,17 @@ def write_file(path, content):
 
     path.write_text(content, encoding="utf-8")
 
+def write_output(filename, content):
+    """
+    Write a generated context document into the project/context folder.
+    """
+
+    output_path = OUTPUT_DIR / filename
+
+    write_file(output_path, content)
+
+    print(f"Generated: {output_path.relative_to(REPO_ROOT)}")
+
 def read_file(path):
     """Read UTF-8 file safely."""
 
@@ -163,7 +174,7 @@ def scan_repository():
 
 def build_manifest(repo):
     """
-    Build a project manifest.
+    Build the project manifest.
     """
 
     output = []
@@ -171,25 +182,57 @@ def build_manifest(repo):
     output.append("# Project Manifest")
     output.append("")
     output.append(f"Generated: {get_timestamp()}")
+    output.append(f"Repository Root: {REPO_ROOT}")
+    output.append("")
+    output.append("---")
+    output.append("")
+    output.append("## Repository Statistics")
+    output.append("")
+    output.append(f"Documentation Files : {len(repo.docs)}")
+    output.append(f"Hardware Configs    : {len(repo.hardware)}")
+    output.append(f"Machine Configs     : {len(repo.machine)}")
+    output.append(f"Calibration Configs : {len(repo.calibration)}")
+    output.append(f"Macro Files         : {len(repo.macros)}")
+    output.append("")
+    output.append(f"Git Branch          : {get_git_branch()}")
+    output.append(f"Git Commit          : {get_git_commit()}")
+
+    output.append("")
+    output.append("---")
+    output.append("")
+    output.append("## Repository Structure")
+    output.append("")
+
+    for folder in ROOT_FOLDERS:
+        output.append(f"- {folder}/")
+
+    output.append("")
+    output.append("---")
     output.append("")
     output.append("## Documentation")
+    output.append("")
 
     for doc in repo.docs:
+
         status = "⚠ Empty" if doc.lines == 0 else "✓"
 
         output.append(
-            f"- {doc.name} ({doc.lines} lines) {status}"
+            f"- {doc.name:<25} {doc.lines:>4} lines   {status}"
         )
 
+    output.append("")
+    output.append("---")
     output.append("")
     output.append("## Configuration")
 
     for section in ("hardware", "machine", "calibration", "macros"):
 
-        output.append("")
-        output.append(f"### {section.title()}")
+        configs = getattr(repo, section)
 
-        for cfg in getattr(repo, section):
+        output.append("")
+        output.append(f"### {section.title()} ({len(configs)})")
+
+        for cfg in configs:
             output.append(f"- {cfg.name}")
 
     return "\n".join(output)
@@ -231,11 +274,16 @@ def main():
 
     print("\nContext generator initialisation successful.")
 
+    print("\nGenerating context documents...")
+
     manifest = build_manifest(repo)
 
-    print()
-    print("=" * 60)
-    print(manifest)
+    write_output(
+        "PROJECT_MANIFEST.md",
+        manifest,
+    )
+
+    print("\nContext generation complete.")
 
 if __name__ == "__main__":
     main()
