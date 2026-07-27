@@ -124,3 +124,23 @@ Filament supplied from external EIBOS dryer.
 The Git commit history records software configuration changes.
 
 This document records only physical machine changes.
+
+### Probe geometry correction
+
+Corrected CR Touch XY offsets after discovering the sign convention had been reversed during commissioning.
+
+Old:
+
+x_offset = -44
+y_offset = -9
+
+New:
+
+x_offset = 44
+y_offset = 9
+
+Returned safe_z_home to the physical bed centre (110,110).
+
+Recalibrated Z probe offset:
+
+z_offset = 0.108

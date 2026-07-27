@@ -193,3 +193,22 @@ First-layer validation still required during initial print calibration.
 - [ ] Input Shaper
 - [ ] Performance Limit Optimisation
 - [ ] ABS Validation
+
+## Safe Z Home
+
+Probe offsets verified.
+
+Final values:
+
+- x_offset = 44
+- y_offset = 9
+
+safe_z_home:
+
+home_xy_position: 110,110
+
+Result:
+
+- Probe homes at physical bed centre.
+- PROBE_CALIBRATE performs automatic probing and manual nozzle calibration at the same physical location.
+- Behaviour matches Klipper documentation.
