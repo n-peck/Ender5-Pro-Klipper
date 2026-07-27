@@ -172,22 +172,13 @@ def scan_repository():
 
     return repo
 
-def build_manifest(repo):
+def build_repository_statistics(repo):
     """
-    Build the project manifest.
+    Build repository statistics section.
     """
 
     output = []
 
-    output.append("# Project Manifest")
-    output.append("")
-    output.append(f"Generated: {get_timestamp()}")
-    output.append(f"Repository Root: {REPO_ROOT}")
-    output.append("")
-    output.append("---")
-    output.append("")
-    output.append("## Repository Statistics")
-    output.append("")
     output.append(f"Documentation Files : {len(repo.docs)}")
     output.append(f"Hardware Configs    : {len(repo.hardware)}")
     output.append(f"Machine Configs     : {len(repo.machine)}")
@@ -197,20 +188,26 @@ def build_manifest(repo):
     output.append(f"Git Branch          : {get_git_branch()}")
     output.append(f"Git Commit          : {get_git_commit()}")
 
-    output.append("")
-    output.append("---")
-    output.append("")
-    output.append("## Repository Structure")
-    output.append("")
+    return "\n".join(output)
+
+def build_repository_structure():
+    """
+    Build repository folder structure.
+    """
+
+    output = []
 
     for folder in ROOT_FOLDERS:
         output.append(f"- {folder}/")
 
-    output.append("")
-    output.append("---")
-    output.append("")
-    output.append("## Documentation")
-    output.append("")
+    return "\n".join(output)
+
+def build_documentation_summary(repo):
+    """
+    Build documentation inventory.
+    """
+
+    output = []
 
     for doc in repo.docs:
 
@@ -220,22 +217,102 @@ def build_manifest(repo):
             f"- {doc.name:<25} {doc.lines:>4} lines   {status}"
         )
 
-    output.append("")
-    output.append("---")
-    output.append("")
-    output.append("## Configuration")
+    return "\n".join(output)
+
+def build_configuration_summary(repo):
+    """
+    Build configuration inventory.
+    """
+
+    output = []
 
     for section in ("hardware", "machine", "calibration", "macros"):
 
         configs = getattr(repo, section)
 
-        output.append("")
         output.append(f"### {section.title()} ({len(configs)})")
 
         for cfg in configs:
             output.append(f"- {cfg.name}")
 
+        output.append("")
+
     return "\n".join(output)
+
+def build_document(repo, filename):
+    """
+    Return the contents of a documentation file.
+    """
+
+    for doc in repo.docs:
+
+        if doc.name.lower() == filename.lower():
+
+            return doc.text.strip()
+
+    return "*Document not found.*"
+
+def build_ai_briefing(repo):
+
+    return (
+        "This project is currently in the commissioning stage.\n\n"
+        "The configuration architecture has been separated into "
+        "hardware, machine and calibration modules.\n\n"
+        "Continue with the next outstanding commissioning or "
+        "calibration task before making hardware changes."
+    )
+
+def build_session_context(repo, templates):
+
+    template = templates["session"]
+
+    replacements = {
+
+        "generated": get_timestamp(),
+
+        "repository": build_repository_statistics(repo),
+
+        "hardware": build_document(repo, "HARDWARE.md"),
+
+        "commissioning": build_document(repo, "COMMISSIONING.md"),
+
+        "calibration": build_document(repo, "CALIBRATION.md"),
+
+        "known_issues": build_document(repo, "KNOWN-ISSUES.md"),
+
+        "changelog": build_document(repo, "MACHINE_CHANGELOG.md"),
+
+        "git_history": get_git_history(),
+
+        "briefing": build_ai_briefing(repo),
+
+    }
+
+    return render_template(
+        template,
+        replacements,
+    )
+
+def build_manifest(repo, templates):
+    """
+    Render the project manifest.
+    """
+
+    template = templates["manifest"]
+
+    replacements = {
+        "generated": get_timestamp(),
+        "repository_root": REPO_ROOT,
+        "repository_statistics": build_repository_statistics(repo),
+        "repository_structure": build_repository_structure(),
+        "documentation": build_documentation_summary(repo),
+        "configuration": build_configuration_summary(repo),
+    }
+
+    return render_template(
+        template,
+        replacements,
+    )
 
 def main():
 
@@ -276,11 +353,21 @@ def main():
 
     print("\nGenerating context documents...")
 
-    manifest = build_manifest(repo)
+    manifest = build_manifest(repo, templates)
 
     write_output(
         "PROJECT_MANIFEST.md",
         manifest,
+    )
+
+    session = build_session_context(
+    repo,
+    templates,
+    )
+
+    write_output(
+        "SESSION_CONTEXT.md",
+        session,
     )
 
     print("\nContext generation complete.")
