@@ -3,6 +3,8 @@ from pathlib import Path
 from datetime import datetime
 import subprocess
 
+VERSION = "0.5.0"
+
 @dataclass
 class RepoFile:
     name: str
@@ -50,17 +52,47 @@ PROJECT_DIR = REPO_ROOT / "project"
 CONFIG_DIR = REPO_ROOT
 
 ROOT_FOLDERS = {
-    "docs": ("docs", "*.md"),
-    "hardware": ("hardware", "*.cfg"),
-    "machine": ("machine", "*.cfg"),
-    "calibration": ("calibration", "*.cfg"),
-    "macros": ("macros", "*.cfg"),
+    "docs": {
+        "path": "docs",
+        "pattern": "*.md",
+    },
+    "hardware": {
+        "path": "hardware",
+        "pattern": "*.cfg",
+    },
+    "machine": {
+        "path": "machine",
+        "pattern": "*.cfg",
+    },
+    "calibration": {
+        "path": "calibration",
+        "pattern": "*.cfg",
+    },
+    "macros": {
+        "path": "macros",
+        "pattern": "*.cfg",
+    },
+}
+
+SESSION_DOCUMENTS = {
+    "hardware": "HARDWARE.md",
+    "commissioning": "COMMISSIONING.md",
+    "calibration": "CALIBRATION.md",
+    "known_issues": "KNOWN-ISSUES.md",
+    "changelog": "MACHINE_CHANGELOG.md",
 }
 
 def get_timestamp():
     """Return generation timestamp."""
 
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def get_generator():
+    """
+    Return the generator name and version.
+    """
+
+    return f"Ender 5 Pro Context Generator v{VERSION}"
 
 def load_templates():
     """Load all markdown templates."""
@@ -98,7 +130,10 @@ def write_output(filename, content):
 
     write_file(output_path, content)
 
-    print(f"Generated: {output_path.relative_to(REPO_ROOT)}")
+    print(
+        f"Generated: {output_path.relative_to(REPO_ROOT)} "
+        f"({get_generator()})"
+    )
 
 def read_file(path):
     """Read UTF-8 file safely."""
@@ -139,9 +174,10 @@ def scan_repository():
 
     repo = Repository()
 
-    for category, (folder_name, pattern) in ROOT_FOLDERS.items():
+    for category, settings in ROOT_FOLDERS.items():
 
-        folder = REPO_ROOT / folder_name
+        folder = REPO_ROOT / settings["path"]
+        pattern = settings["pattern"]
 
         if not folder.exists():
             continue
@@ -239,6 +275,32 @@ def build_configuration_summary(repo):
 
     return "\n".join(output)
 
+def build_config_section(title, configs):
+    """
+    Build a configuration section.
+    """
+
+    output = []
+
+    output.append("=" * 60)
+    output.append(title.upper())
+    output.append("=" * 60)
+    output.append("")
+
+    for cfg in configs:
+
+        output.append(f"## {cfg.name}")
+        output.append("")
+
+        output.append("```")
+        output.append(cfg.text.rstrip())
+        output.append("```")
+        output.append("")
+        output.append("-" * 60)
+        output.append("")
+
+    return "\n".join(output)
+
 def build_document(repo, filename):
     """
     Return the contents of a documentation file.
@@ -269,22 +331,74 @@ def build_session_context(repo, templates):
     replacements = {
 
         "generated": get_timestamp(),
+        "generator": get_generator(),
 
         "repository": build_repository_statistics(repo),
 
-        "hardware": build_document(repo, "HARDWARE.md"),
+        "hardware": build_document(repo,
+            SESSION_DOCUMENTS["hardware"],
+        ),
 
-        "commissioning": build_document(repo, "COMMISSIONING.md"),
+        "commissioning": build_document(repo,
+            SESSION_DOCUMENTS["commissioning"],
+        ),
 
-        "calibration": build_document(repo, "CALIBRATION.md"),
+        "calibration": build_document(repo,
+            SESSION_DOCUMENTS["calibration"],
+        ),
 
-        "known_issues": build_document(repo, "KNOWN-ISSUES.md"),
+        "known_issues": build_document(repo,
+            SESSION_DOCUMENTS["known_issues"],
+        ),
 
-        "changelog": build_document(repo, "MACHINE_CHANGELOG.md"),
+        "changelog": build_document(repo,
+            SESSION_DOCUMENTS["changelog"],
+        ),
 
         "git_history": get_git_history(),
 
         "briefing": build_ai_briefing(repo),
+
+    }
+
+    return render_template(
+        template,
+        replacements,
+    )
+
+def build_technical_reference(repo, templates):
+    """
+    Render the technical reference document.
+    """
+
+    template = templates["technical"]
+
+    replacements = {
+
+        "generated": get_timestamp(),
+        "generator": get_generator(),
+
+        "repository": build_repository_statistics(repo),
+
+        "hardware": build_config_section(
+            "Hardware",
+            repo.hardware,
+        ),
+
+        "machine": build_config_section(
+            "Machine",
+            repo.machine,
+        ),
+
+        "calibration": build_config_section(
+            "Calibration",
+            repo.calibration,
+        ),
+
+        "macros": build_config_section(
+            "Macros",
+            repo.macros,
+        ),
 
     }
 
@@ -302,6 +416,7 @@ def build_manifest(repo, templates):
 
     replacements = {
         "generated": get_timestamp(),
+        "generator": get_generator(),
         "repository_root": REPO_ROOT,
         "repository_statistics": build_repository_statistics(repo),
         "repository_structure": build_repository_structure(),
@@ -317,7 +432,7 @@ def build_manifest(repo, templates):
 def main():
 
     print("=" * 60)
-    print("Ender 5 Pro Context Generator")
+    print(get_generator())
     print("=" * 60)
 
     print("\nLoading templates...")
@@ -360,14 +475,18 @@ def main():
         manifest,
     )
 
-    session = build_session_context(
-    repo,
-    templates,
-    )
+    session = build_session_context(repo,templates,)
 
     write_output(
         "SESSION_CONTEXT.md",
         session,
+    )
+
+    technical = build_technical_reference(repo,templates,)
+
+    write_output(
+        "TECHNICAL_REFERENCE.md",
+        technical,
     )
 
     print("\nContext generation complete.")
