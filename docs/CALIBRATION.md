@@ -37,3 +37,5 @@ RUN1 (PID_CALIBRATE HEATER=heater_bed TARGET=60) =
 PID parameters: pid_Kp=70.251 pid_Ki=1.082 pid_Kd=1140.694
 
 5. Bed Mesh
+
+Important: The SAVE_CONFIG block at the end of printer.cfg is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire block (including the #*# <---------------------- SAVE_CONFIG ----------------------> marker) and allow Klipper to regenerate it with SAVE_CONFIG.

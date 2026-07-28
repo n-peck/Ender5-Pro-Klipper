@@ -11,6 +11,9 @@
 ## M3
 
 ⬜ Calibration complete
+- Probe offsets validated
+- Z offset confirmed
+- Bed mesh saved in "SAVE_CONFIG"
 
 ## M4
 

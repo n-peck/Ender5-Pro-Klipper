@@ -2,10 +2,10 @@
 
 High Priority
 
-- PROBE_CALIBRATE
-- SAVE_CONFIG
-- PID tune hotend
-- PID tune heated bed
+- PROBE_CALIBRATE - Complete
+- SAVE_CONFIG - In progress
+- PID tune hotend - Complete
+- PID tune heated bed - Complete
 - Configure bed mesh
 - Extruder rotation distance
 - First PLA calibration cube

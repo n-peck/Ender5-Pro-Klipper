@@ -22,6 +22,16 @@ Simplifies maintenance and future upgrades.
 
 ---
 
+Decision  
+
+Retain unified [bed_mesh] section design for future calibration.
+
+Reason  
+
+Klipper does not merge configuration sections across includes; bed mesh geometry and calibration must reside in a single section. Cleaned up SAVE_CONFIG and now stores in project.cfg
+
+---
+
 ## Motion
 
 Decision
@@ -52,9 +62,9 @@ Measure physical probe offsets.
 
 Result
 
-X = -44
+X = 44
 
-Y = -9
+Y = 9
 
 ---
 

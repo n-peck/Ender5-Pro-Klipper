@@ -212,3 +212,7 @@ Result:
 - Probe homes at physical bed centre.
 - PROBE_CALIBRATE performs automatic probing and manual nozzle calibration at the same physical location.
 - Behaviour matches Klipper documentation.
+
+## Session 4 - PIR and Bedmesh
+
+Important: The SAVE_CONFIG block at the end of printer.cfg is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire block (including the #*# <---------------------- SAVE_CONFIG ----------------------> marker) and allow Klipper to regenerate it with SAVE_CONFIG.

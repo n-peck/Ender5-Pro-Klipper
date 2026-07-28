@@ -8,7 +8,7 @@
 
 ✅ Z Offset - DONE
 
-⬜ PID Attributes
+✅ PID Attributes - DONE
 
 ⬜ Bed Mesh
 

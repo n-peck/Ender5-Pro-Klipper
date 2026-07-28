@@ -13,13 +13,13 @@
 - [x] Endstops verified
 - [x] CR Touch communication verified
 - [x] Successful G28 homing
+- [x] Probe Z offset calibration
+- [x] Bed heater PID
+- [x] Hotend PID
+- [x] Bed mesh
 
 ### Remaining Commissioning
 
-- [ ] Probe Z offset calibration
-- [ ] Bed heater PID
-- [ ] Hotend PID
-- [ ] Bed mesh
 - [ ] Extruder rotation distance
 - [ ] Pressure Advance
 - [ ] Input Shaper
