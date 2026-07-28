@@ -2,22 +2,35 @@
 
 This document records the commissioning, calibration and validation of the printer.
 
-Hardware installation history is recorded separately in `CHANGELOG.md`.
+Hardware installation history is recorded separately in `MACHINE_CHANGELOG.md`.
 
 ---
 
-# Session 1 – Initial Bring-up
+# Overall Status
 
-Date: 2026-07
+| Stage | Status |
+|------|--------|
+| Firmware Bring-up | ✅ Complete |
+| Motion Commissioning | ✅ Complete |
+| CR Touch Commissioning | ✅ Complete |
+| Initial Calibration | 🟡 In Progress |
+| Reliable PLA Printing | ⬜ Pending |
+| Reliable ABS Printing | ⬜ Pending |
+
+---
+
+# Session 1 – Machine Bring-up
+
+**Date:** 2026-07
 
 ## Firmware
 
-- Klipper installed
-- Moonraker installed
-- Mainsail configured
-- KlipperScreen installed
-- Repository structure created
-- Configuration modularised
+| Component | Version |
+|-----------|----------|
+| Klipper | v0.13.0-708 |
+| Moonraker | Installed |
+| Mainsail | Installed |
+| KlipperScreen | Installed |
 
 ---
 
@@ -31,7 +44,7 @@ Date: 2026-07
 | Y Axis | PASS |
 | Z Axis | PASS |
 
-### Final Motor Configuration
+### Motor Configuration
 
 | Axis | Configuration |
 |------|---------------|
@@ -41,178 +54,288 @@ Date: 2026-07
 
 ---
 
-## Motion Limits
-
-Safe commissioning limits configured.
-
-| Parameter | Value |
-|----------|------:|
-| Max Velocity | 300 mm/s |
-| Max Acceleration | 3000 mm/s² |
-| Max Z Velocity | 15 mm/s |
-| Max Z Acceleration | 100 mm/s² |
-| Square Corner Velocity | 5 mm/s |
-| Minimum Cruise Ratio | 0.5 |
-
-These values are intentionally conservative and will be increased after resonance testing.
-
----
-
 ## CR Touch
 
-### Probe Offset
-
-Measured nozzle-to-probe offsets.
+### Configuration
 
 | Parameter | Value |
 |----------|------:|
 | X Offset | -44 mm |
 | Y Offset | -9 mm |
-
-### Repeatability
-
-| Setting | Value |
-|---------|------:|
 | Samples | 3 |
-| Result | Median |
-| Tolerance | 0.02 mm |
-| Retries | 3 |
+| Sample Result | Median |
+| Sample Tolerance | 0.020 mm |
+| Sample Retries | 3 |
 
 ---
 
-## Safe Z Homing
+## Commissioning Outcome
 
-### Verification
-
-`G28`
-
-**PASS**
-
-### Observation
-
-Printer firmware:
-
-```
-Klipper v0.13.0-707-gf604aeee
-```
-
-did **not** automatically compensate for the configured BLTouch XY offsets when using `safe_z_home`.
-
-Correct operation required:
-
-```
-home_xy_position: 66,101
-```
-
-This places the probe at the physical bed centre (110,110).
-
-This behaviour should be revalidated following future Klipper upgrades.
+**Status:** PASS
 
 ---
 
-## Git Repository
+# Session 2 – Z Probe Calibration
 
-Repository adopted as the project's single source of truth.
+## Probe Z Offset
 
-Workflow:
+### Calibration
 
-```
-git pull
-edit
-git commit
-git push
-```
-
-SSH authentication configured and verified.
-
----
-
-# Session 2 – Repository Refactor
-
-Configuration reorganised into logical groups.
+Command:
 
 ```
-hardware/
-machine/
-calibration/
+PROBE_CALIBRATE
 ```
 
-## Hardware
-
-Electrical configuration only.
-
-## Machine
-
-Physical printer geometry and operating limits.
-
-## Calibration
-
-Generated calibration values only.
-
-This structure separates permanent hardware configuration from values expected to change during printer tuning.
-
----
-
-# Session 3 – CR Touch Z Calibration
-
-## Probe Calibration
-
-`PROBE_CALIBRATE`
-
-Measured probe offset:
+Final value:
 
 ```
 z_offset: 0.390
 ```
 
-Result committed to:
+Stored in:
 
 ```
 calibration/probe.cfg
 ```
 
-### Notes
+### Verification
 
 Probe calibration completed successfully.
 
-First-layer validation still required during initial print calibration.
+### Result
+
+- PASS
 
 ---
 
-# Future Commissioning
+## Commissioning Outcome
 
-- [ ] Hotend PID
-- [ ] Bed PID
-- [ ] Bed Mesh
-- [ ] Extruder Rotation Distance
-- [ ] PLA Calibration Cube
-- [ ] Flow Calibration
-- [ ] Temperature Tower
-- [ ] Retraction Calibration
-- [ ] Pressure Advance
-- [ ] Input Shaper
-- [ ] Performance Limit Optimisation
-- [ ] ABS Validation
+**Status:** PASS
+
+---
+
+# Session 3 – Motion Commissioning
+
+## Motion Verification
+
+### Axis Movement
+
+| Axis | Result |
+|------|--------|
+| X | PASS |
+| Y | PASS |
+| Z | PASS |
+
+Motion directions verified against the official Klipper reference configuration.
+
+---
+
+## Homing
+
+| Function | Result |
+|----------|--------|
+| X Home | PASS |
+| Y Home | PASS |
+| Z Home | PASS |
+
+---
 
 ## Safe Z Home
 
-Probe offsets verified.
+### Configuration
+
+```
+home_xy_position: 110,110
+```
+
+### Verification
+
+- Probe homes at the physical centre of the bed.
+- Nozzle correctly compensates for probe offsets.
+- `PROBE_CALIBRATE` operates at the same physical location.
+- Behaviour verified against the Klipper documentation.
+
+### Result
+
+- PASS
+
+---
+
+## Commissioning Outcome
+
+**Status:** PASS
+
+---
+
+# Session 4 – Initial Calibration
+
+## Probe Accuracy
+
+### Acceptance Criteria
+
+- Standard deviation < 0.010 mm
+
+### Measured Result
+
+```
+maximum:             0.012500
+minimum:            -0.005000
+range:               0.017500
+standard deviation:  0.006614
+```
+
+### Result
+
+- PASS
+
+---
+
+## Probe Calibration Verification
+
+### Configuration
+
+```
+z_offset: 0.390
+```
+
+### Verification
+
+Existing calibration confirmed.
+
+### Result
+
+- PASS
+
+---
+
+## Hotend PID
+
+### Configuration
+
+Target temperature:
+
+```
+220°C
+```
 
 Final values:
 
-- x_offset = 44
-- y_offset = 9
+```
+pid_Kp=25.744
+pid_Ki=1.244
+pid_Kd=133.227
+```
 
-safe_z_home:
+Stored using:
 
-home_xy_position: 110,110
+```
+SAVE_CONFIG
+```
 
-Result:
+### Result
 
-- Probe homes at physical bed centre.
-- PROBE_CALIBRATE performs automatic probing and manual nozzle calibration at the same physical location.
-- Behaviour matches Klipper documentation.
+- PASS
 
-## Session 4 - PIR and Bedmesh
+---
 
-Important: The SAVE_CONFIG block at the end of printer.cfg is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire block (including the #*# <---------------------- SAVE_CONFIG ----------------------> marker) and allow Klipper to regenerate it with SAVE_CONFIG.
+## Heated Bed PID
+
+### Configuration
+
+Target temperature:
+
+```
+60°C
+```
+
+Final values:
+
+```
+pid_Kp=70.251
+pid_Ki=1.082
+pid_Kd=1140.694
+```
+
+Stored using:
+
+```
+SAVE_CONFIG
+```
+
+### Result
+
+- PASS
+
+---
+
+## Bed Mesh
+
+### Configuration
+
+| Parameter | Value |
+|----------|------:|
+| Grid Size | 5 × 5 |
+
+Stored using:
+
+```
+SAVE_CONFIG
+```
+
+> **Note**
+>
+> The `SAVE_CONFIG` block is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire generated block (including the `#*# <---------------------- SAVE_CONFIG ---------------------->` marker) and allow Klipper to regenerate it.
+
+### Result
+
+- PASS
+
+---
+
+## Extruder Rotation Distance
+
+### Acceptance Criteria
+
+- 100.0 ±0.2 mm extrusion
+
+### Measured Result
+
+| Parameter | Value |
+|----------|------:|
+| Filament | Elegoo PLA+ Black 1.75 mm |
+| Hotend Temperature | 220°C |
+| Mark Position | 120.0 mm |
+| Commanded Extrusion | 100.0 mm |
+| Remaining Distance | 20.0 mm |
+| Actual Extrusion | 100.0 mm |
+
+Current `rotation_distance` verified.
+
+Configuration stored in:
+
+```
+calibration/rotation.cfg
+```
+
+### Result
+
+- PASS
+
+---
+
+## Commissioning Outcome
+
+**Status:** IN PROGRESS
+
+**Next Stage**
+
+- PLA first-layer validation
+- Calibration cube
+- Flow calibration
+- Temperature tower
+- Retraction calibration
+- Pressure Advance
+- Input Shaper
+- Performance optimisation
+- ABS validation

@@ -1,29 +1,11 @@
-## safe_z_home
+# Known Issues
 
-Observed
+This document records current unresolved issues and accepted limitations.
 
-Klipper
+Resolved issues are removed once verified and remain documented in the project history.
 
-v0.13.0-707-gf604aeee
+---
 
-Behaviour
+## Current Status
 
-home_xy_position interpreted as nozzle position.
-
-Workaround
-
-Use:
-
-66,101
-
-instead of
-
-110,110
-
-Status
-
-Working
-
-Future
-
-Re-test after Klipper upgrades.
+No known issues.

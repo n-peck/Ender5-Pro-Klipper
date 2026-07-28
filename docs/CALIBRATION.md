@@ -1,41 +1,195 @@
-# Calibration
+# Calibration Guide
 
-Order
+This document defines the recommended calibration sequence and records the latest calibration results.
 
-1. PROBE_CALIBRATE
-2. SAVE_CONFIG
-3. PID Hotend
-4. PID Bed
-5. Bed Mesh
-6. Extruder Rotation Distance
-7. Flow
-8. Retraction
-9. Pressure Advance
-10. Input Shaper
+Current verified calibration values are recorded in `COMMISSIONING.md`.
 
-Current Status
+---
 
-1. PROBE_ACCURACY 2026/07/27 2:29pm
+# Calibration Order
 
-RUN1 (PROBE_ACCURACY) =
-probe accuracy results: maximum 0.015000, minimum 0.007500, range 0.007500, average 0.011500, median 0.012500, standard deviation 0.002550
+Perform calibration in the following order after any major hardware changes.
 
-RUN2 = 
-probe accuracy results: maximum -0.005000, minimum -0.017500, range 0.012500, average -0.012500, median -0.015000, standard deviation 0.004743
+| Step | Calibration | Status |
+|------|-------------|--------|
+| 1 | Probe Accuracy | ✅ |
+| 2 | Probe Z Offset (`PROBE_CALIBRATE`) | ✅ |
+| 3 | Hotend PID | ✅ |
+| 4 | Heated Bed PID | ✅ |
+| 5 | Bed Mesh | ✅ |
+| 6 | Extruder Rotation Distance | ✅ |
+| 7 | PLA First Layer | ⬜ |
+| 8 | Calibration Cube | ⬜ |
+| 9 | Flow Calibration | ⬜ |
+| 10 | Temperature Tower | ⬜ |
+| 11 | Retraction Calibration | ⬜ |
+| 12 | Pressure Advance | ⬜ |
+| 13 | Input Shaper | ⬜ |
+| 14 | Performance Optimisation | ⬜ |
+| 15 | ABS Validation | ⬜ |
 
-3. PID Hotend
+---
 
-RUN1 (PID_CALIBRATE HEATER=extruder TARGET=220) =
-PID parameters: pid_Kp=26.134 pid_Ki=1.351 pid_Kd=126.423
+# Probe Accuracy
 
-RUN2 = 
-PID parameters: pid_Kp=25.744 pid_Ki=1.244 pid_Kd=133.227
+Command:
 
-4. PID Bed
+```
+PROBE_ACCURACY
+```
 
-RUN1 (PID_CALIBRATE HEATER=heater_bed TARGET=60) =
-PID parameters: pid_Kp=70.251 pid_Ki=1.082 pid_Kd=1140.694
+## Run 1
 
-5. Bed Mesh
+```
+maximum:             0.015000
+minimum:             0.007500
+range:               0.007500
+average:             0.011500
+median:              0.012500
+standard deviation:  0.002550
+```
 
-Important: The SAVE_CONFIG block at the end of printer.cfg is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire block (including the #*# <---------------------- SAVE_CONFIG ----------------------> marker) and allow Klipper to regenerate it with SAVE_CONFIG.
+## Run 2
+
+```
+maximum:            -0.005000
+minimum:            -0.017500
+range:               0.012500
+average:            -0.012500
+median:             -0.015000
+standard deviation:  0.004743
+```
+
+Result:
+
+- PASS
+
+---
+
+# Probe Z Offset
+
+Command:
+
+```
+PROBE_CALIBRATE
+```
+
+Calibration stored using:
+
+```
+SAVE_CONFIG
+```
+
+---
+
+# Hotend PID
+
+Command:
+
+```
+PID_CALIBRATE HEATER=extruder TARGET=220
+```
+
+## Run 1
+
+```
+pid_Kp=26.134
+pid_Ki=1.351
+pid_Kd=126.423
+```
+
+## Run 2
+
+```
+pid_Kp=25.744
+pid_Ki=1.244
+pid_Kd=133.227
+```
+
+Calibration stored using:
+
+```
+SAVE_CONFIG
+```
+
+---
+
+# Heated Bed PID
+
+Command:
+
+```
+PID_CALIBRATE HEATER=heater_bed TARGET=60
+```
+
+## Run 1
+
+```
+pid_Kp=70.251
+pid_Ki=1.082
+pid_Kd=1140.694
+```
+
+Calibration stored using:
+
+```
+SAVE_CONFIG
+```
+
+---
+
+# Bed Mesh
+
+Generate a 5 × 5 bed mesh.
+
+Calibration stored using:
+
+```
+SAVE_CONFIG
+```
+
+> **Important**
+>
+> The `SAVE_CONFIG` block is managed exclusively by Klipper.
+>
+> Never manually edit or partially delete the generated block.
+>
+> If corruption occurs, remove the entire generated block (including the `#*# <---------------------- SAVE_CONFIG ---------------------->` marker) and allow Klipper to regenerate it.
+
+---
+
+# Extruder Rotation Distance
+
+Procedure:
+
+- Heat the hotend to 220°C.
+- Mark filament at 120 mm.
+- Extrude 100 mm (two 50 mm moves due to Klipper safety limits).
+- Measure the remaining distance.
+
+Latest verification:
+
+| Parameter | Value |
+|----------|------:|
+| Filament | Elegoo PLA+ Black 1.75 mm |
+| Mark Position | 120.0 mm |
+| Commanded Extrusion | 100.0 mm |
+| Remaining Distance | 20.0 mm |
+| Actual Extrusion | 100.0 mm |
+
+Result:
+
+- PASS
+- No adjustment required.
+
+Configuration:
+
+```
+rotation_distance
+```
+
+is stored in:
+
+```
+calibration/rotation.cfg
+```

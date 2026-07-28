@@ -1,110 +1,150 @@
 # Ender 5 Pro Project Journal
 
-## Session 1
+This journal records the engineering decisions, implementation work and lessons learned throughout the project.
 
-Initial planning.
+The current verified state of the printer is recorded separately in `COMMISSIONING.md`.
 
-Established project objectives.
+---
 
-Selected Klipper.
+# Session 1
 
-Created enclosure design.
+## Objectives
 
-...
+- Define the project scope.
+- Establish the upgrade roadmap.
+- Select the firmware platform.
 
-## Session 2
+## Completed
 
-Installed Debian.
+- Planned the complete printer rebuild.
+- Selected Klipper as the firmware platform.
+- Designed the printer enclosure.
+- Defined the long-term hardware upgrade roadmap.
 
-Installed KIAUH.
+---
 
-Installed Klipper.
+# Session 2
 
-Installed Moonraker.
+## Objectives
 
-Installed Mainsail.
+- Build the software platform.
+- Install the Klipper ecosystem.
 
-Installed KlipperScreen.
+## Completed
 
-...
+- Installed Debian.
+- Installed KIAUH.
+- Installed Klipper.
+- Installed Moonraker.
+- Installed Mainsail.
+- Installed KlipperScreen.
 
-## Session 3
+### Engineering Notes
 
-Installed SKR Mini E3 V3.
+- Adopted Raspberry Pi as the dedicated printer controller.
+- Established a clean software foundation before beginning printer commissioning.
 
-Compiled firmware.
+---
 
-Flashed firmware.
+# Session 3 — 2026-07
 
-Verified USB communication.
+## Objectives
 
-Created modular project structure.
+- Install the new control electronics.
+- Bring the printer online under Klipper.
+- Establish project documentation and version control.
 
-Initialised Git.
+## Completed
 
-Identified that motion subsystem should be rebuilt using official Klipper reference files rather than reconstructed manually.
+- Installed the BTT SKR Mini E3 V3.
+- Compiled and flashed Klipper firmware.
+- Verified USB communication.
+- Created the project repository.
+- Initialised Git version control.
+- Designed the modular configuration architecture.
 
-Next session:
+### Engineering Decisions
 
-• Rebuild motion.cfg
-• Commission motion system
+- Adopted a modular configuration layout to separate hardware, machine geometry and calibration values.
+- Decided to rebuild the motion subsystem using the official Klipper reference configuration rather than continuing with manually reconstructed settings.
 
-## Session 4 - 2026-07-25
+### Next Session
 
-Objectives
+- Rebuild the motion subsystem.
+- Commission printer motion.
 
-- Commission motion system
-- Verify CR Touch
-- Configure Git workflow
+---
 
-Completed
+# Session 4 — 2026-07-25
 
-- Git SSH authentication configured
-- Raspberry Pi now pushes directly to GitHub
-- Extruder configuration separated
-- Probe configuration completed
-- Motion directions verified
-- Probe offsets measured
-- Successful homing achieved
+## Objectives
 
-Lessons Learned
+- Commission the motion subsystem.
+- Verify CR Touch operation.
+- Complete Git workflow.
 
-safe_z_home required manual compensation using the nozzle coordinates rather than probe coordinates.
+## Completed
 
-Next Session
+- Configured SSH authentication for Git.
+- Enabled direct GitHub pushes from the Raspberry Pi.
+- Completed modularisation of the printer configuration.
+- Separated the extruder into an independent configuration file.
+- Completed probe configuration.
+- Rebuilt the motion subsystem using the Klipper reference configuration.
+- Commissioned printer motion and homing.
 
-Printer calibration.
+### Engineering Decisions
 
-## Session 5 — 2026‑07‑28
+- Adopted the official Klipper configuration as the baseline for future maintenance.
+- Confirmed that separating hardware configuration into dedicated include files significantly improves maintainability and future hardware upgrades.
 
-Objectives
+### Lessons Learned
 
-- Validate probe offsets
-- Confirm Z‑home behaviour
-- Begin calibration workflow
-- Investigate bed mesh configuration structure
+- `safe_z_home` uses nozzle coordinates rather than probe coordinates.
+- Correct probe positioning therefore requires compensation using the measured probe offsets.
+- Initial assumptions regarding Safe Z Home behaviour were incorrect and required verification against the Klipper documentation.
 
-Completed
+### Next Session
 
-- Verified probe offsets remain correct (X‑44, Y‑9)
-- Confirmed safe_z_home behaviour and nozzle‑based homing
-- Validated modular configuration structure
-- Identified Klipper’s non‑merging behaviour for repeated section names
-- Determined that bed mesh must be managed as a unified section
-- Deferred bed mesh implementation to external tooling workflow
+- Begin printer calibration.
+- Validate probe behaviour.
+- Investigate bed mesh configuration.
 
-Lessons Learned
+---
 
-- Klipper overwrites repeated section names rather than merging them; bed mesh geometry and calibration cannot be split across multiple files.
-- Modular configuration remains viable, but certain sections (e.g., [bed_mesh]) must be atomic.
-- Bed mesh values should be managed via a dedicated tool to avoid parser conflicts.
+# Session 5 — 2026-07-28
 
-Next Session
+## Objectives
 
-- PID tuning (hotend + bed)
-- Extruder rotation distance calibration
-- Begin PLA first‑layer validation
+- Begin printer calibration.
+- Validate configuration architecture.
+- Investigate bed mesh implementation.
 
-2026-07-28 — Created Git checkpoint before updating Klipper (v0.13.0-707 → v0.13.0-708) and KlipperScreen. Current printer operational with completed probe calibration and 5×5 bed mesh under investigation. Awaiting verification of SAVE_CONFIG behaviour after update.
+## Completed
 
-Important: The SAVE_CONFIG block at the end of printer.cfg is managed exclusively by Klipper. Do not manually edit or partially delete this block. If it becomes corrupted, remove the entire block (including the #*# <---------------------- SAVE_CONFIG ----------------------> marker) and allow Klipper to regenerate it with SAVE_CONFIG.
+- Validated the modular configuration architecture.
+- Investigated Klipper's configuration parser behaviour.
+- Completed PID tuning for both the hotend and heated bed.
+- Generated the first production bed mesh.
+- Verified extruder rotation calibration.
+- Updated Klipper from v0.13.0-707 to v0.13.0-708.
+- Created a Git checkpoint before firmware updates.
+
+### Engineering Decisions
+
+- Confirmed that calibration values should remain separate from permanent hardware configuration.
+- Decided to move `rotation_distance` into the `calibration` configuration alongside probe offset, PID values and pressure advance.
+- Confirmed that calibration files should be considered disposable and regenerated whenever hardware changes occur.
+
+### Lessons Learned
+
+- Klipper merges repeated configuration sections for most modules but not for generated sections such as `[bed_mesh]`.
+- `[bed_mesh]` must remain a single atomic configuration because mesh geometry and generated mesh values share the same section.
+- The `SAVE_CONFIG` block should never be edited manually. If corruption occurs, remove the entire generated block and allow Klipper to recreate it.
+- Separating permanent hardware configuration from generated calibration values produces a much cleaner and more maintainable repository structure.
+
+### Next Session
+
+- Perform PLA first-layer validation.
+- Print the first dimensional calibration cube.
+- Begin extrusion and print quality tuning.

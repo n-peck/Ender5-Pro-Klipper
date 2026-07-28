@@ -6,8 +6,8 @@ High Priority
 - SAVE_CONFIG - In progress
 - PID tune hotend - Complete
 - PID tune heated bed - Complete
-- Configure bed mesh
-- Extruder rotation distance
+- Configure bed mesh - Complete
+- Extruder rotation distance - Complete
 - First PLA calibration cube
 
 Medium Priority

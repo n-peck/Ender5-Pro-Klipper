@@ -1,40 +1,71 @@
-v1.0.0
+# Changelog
 
-Added
+All notable changes to this project are documented in this file.
 
-- SKR Mini E3 V3
-- Git repository
-- Modular configuration
-- Documentation structure
+The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-Changed
+---
 
-- Removed Creality 4.2.2 board
+# v1.0.0
 
-Planned
+## Added
 
-- Motion commissioning
+- Initial Git repository.
+- Modular Klipper configuration structure.
+- Project documentation framework.
+- BTT SKR Mini E3 V3 mainboard support.
 
-## 2026-07-25
+## Changed
 
-### Added
+- Replaced the Creality v4.2.2 mainboard with the BTT SKR Mini E3 V3.
 
-- Modular hardware configuration
-- Dedicated extruder.cfg
-- SSH Git workflow
-- Commissioning documentation
-- Hardware documentation
-- Known issues documentation
+---
 
-### Changed
+# v1.1.0 - 2026-07-25
 
-- Corrected Y motor direction
-- Corrected Z motor direction
-- Measured CR Touch offsets
-- Updated safe_z_home coordinates
-- Reduced stock hotend maximum temperature to 250°C
+## Added
 
-### Fixed
+- Modular hardware configuration files.
+- Dedicated `extruder.cfg`.
+- SSH-based Git workflow from Raspberry Pi.
+- Initial commissioning documentation.
+- Hardware documentation.
+- Known Issues documentation.
 
-- Successful G28 homing
-- Correct CR Touch operation
+## Changed
+
+- Corrected Y-axis motor direction.
+- Corrected Z-axis motor direction.
+- Measured and configured CR Touch probe offsets.
+- Updated `safe_z_home` configuration.
+- Reduced stock hotend maximum temperature to **250°C**.
+
+## Fixed
+
+- Resolved homing issues preventing successful `G28`.
+- Verified CR Touch operation under Klipper.
+
+---
+
+# v1.2.0 - 2026-07-28
+
+## Added
+
+- 5 × 5 bed mesh calibration.
+- Hotend PID calibration.
+- Heated bed PID calibration.
+- Extruder rotation distance calibration.
+- Probe repeatability validation.
+- Project commissioning records for Sessions 4 and 5.
+
+## Changed
+
+- Moved `rotation_distance` from hardware configuration to `calibration/rotation.cfg`.
+- Standardised calibration file layout.
+- Updated Klipper from **v0.13.0-707** to **v0.13.0-708**.
+- Updated KlipperScreen.
+
+## Fixed
+
+- Confirmed final Safe Z Home behaviour using nozzle coordinates.
+- Verified probe calibration remained valid following configuration changes.
