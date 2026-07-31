@@ -149,62 +149,140 @@ The current verified state of the printer is recorded separately in `COMMISSIONI
 - Print the first dimensional calibration cube.
 - Begin extrusion and print quality tuning.
 
-# Session 6 – First Layer Investigation
+# Session 6 – First Layer Calibration Completed
 
-## Objective
-Investigate inconsistent first layer despite successful bed mesh generation.
+## Objectives
+- Resolve inconsistent first layer despite bed mesh compensation.
+- Configure SKR Mini E3 V3 cooling fans.
+- Re-run probe and bed mesh calibration.
+- Improve mechanical bed tram using Klipper screw tilt adjustment.
+- Validate complete first layer across the printable area.
 
-## Initial Symptoms
-- First layer appeared acceptable near X=0.
-- Centre slightly over-squashed.
-- Prints at X≈200 appeared to fail, initially believed to be nozzle contacting the bed.
+## Work Completed
 
-## Investigation Performed
-- Verified probe offsets were correct.
-- Confirmed bed mesh probed the expected physical locations.
-- Verified active mesh using `BED_MESH_OUTPUT`.
-- Confirmed mesh compensation was active using manual paper tests across the X axis.
-- Confirmed glass bed had not moved between probing and printing.
+### Hotend Investigation
+During first layer testing the printer stopped extruding despite the nozzle appearing to be at the correct Z height.
 
-## Root Cause Found
-Further investigation showed the nozzle was **not** contacting the bed.
+Investigation found:
 
-Instead:
-- No filament was being extruded.
-- Filament could not be manually pushed through the hotend at 220°C.
-- Filament also could not be withdrawn.
-- Heat sink cooling fan was found not to be operating.
+- Filament jammed within the heatbreak / Capricorn tube.
+- Hotend cooling fan was not operating.
+- Heat creep caused filament to soften above the melt zone resulting in a blockage.
 
-The hotend cooling fan had been connected to FAN1 on the SKR Mini E3 V3 but no Klipper fan configuration had yet been created.
+Actions:
 
-This resulted in heat creep during repeated calibration sessions, causing PLA to soften inside the heatbreak and Capricorn tube.
-
-## Corrective Actions
-- Removed hotend assembly.
-- Cleared filament blockage.
+- Completely disassembled the hotend.
+- Removed blocked filament.
+- Cleaned heatbreak and nozzle.
 - Reassembled hotend.
-- Configured Klipper heater fan.
-- Configured part cooling fan.
+- Verified unrestricted manual filament movement.
 
-## New Fan Configuration
+### Fan Configuration
 
-```ini
-[heater_fan heatbreak_cooling_fan]
-pin: PC7
-heater: extruder
-heater_temp: 50.0
-fan_speed: 1.0
+Configured both SKR Mini E3 V3 fan outputs.
 
-[fan]
-pin: PB15
-```
+Hotend heatsink fan:
 
-## Status
-✔ Heater fan now automatically operates above 50°C.
+- MCU Pin: `PC7`
+- Operates automatically whenever the hotend exceeds the configured temperature threshold.
 
-✔ Part cooling fan responds correctly to M106/M107.
+Part cooling fan:
 
-Next session:
-- Verify reliable manual extrusion.
-- Re-run bed mesh.
-- Resume first layer commissioning.
+- MCU Pin: `PB15`
+- Controlled by slicer (M106).
+
+Both fans verified operational.
+
+### PID Calibration
+
+Following restoration of the heatsink fan:
+
+- Re-ran hotend PID calibration.
+- Updated configuration with new PID values.
+
+This ensures tuning reflects the printer's normal operating cooling conditions.
+
+### Probe Configuration
+
+Resolved long-standing SAVE_CONFIG issue.
+
+Previous configuration prevented Klipper updating:
+
+- BLTouch Z offset
+- Bed Mesh
+
+Solution:
+
+- Allowed SAVE_CONFIG to own calibration values.
+- Hardware configuration now contains only static probe parameters.
+- Z offset and mesh are now written directly into printer.cfg.
+
+Calibration workflow now operates normally.
+
+### Screw Tilt Adjustment
+
+Implemented Klipper screw tilt adjustment.
+
+Initial probing positions required correction because screw coordinates must reference probe position rather than nozzle position.
+
+Adjusted probe positions using probe offsets.
+
+Mechanical tramming completed to approximately:
+
+- Base screw
+- Xmax/Ymin : 1 minute adjustment
+- Xmax/Ymax : 2 minute adjustment
+- Xmin/Ymax : 1 minute adjustment
+
+Bed is now mechanically much closer to level before mesh compensation.
+
+Reference note:
+
+Counter-clockwise instruction from Klipper corresponds to:
+
+- Bed moving away from nozzle.
+- Tightening the bed spring.
+- Clockwise rotation of the adjustment wheel when viewed from above.
+
+### Bed Mesh
+
+Following screw adjustment:
+
+- Re-ran PROBE_CALIBRATE.
+- Re-ran BED_MESH_CALIBRATE.
+- Saved new mesh.
+
+Mesh quality improved significantly compared with earlier sessions.
+
+### First Layer Validation
+
+Repeated Teaching Tech first layer tests.
+
+Final observations:
+
+- (0,0): Slightly close.
+- (0,200): Good.
+- (110,110): Good.
+- (200,0): Slightly far.
+- (200,200): Slightly far.
+
+Variation is now small and considered acceptable for commissioning.
+
+### Custom Diagnostic Print
+
+Developed initial prototype of a custom first layer diagnostic print intended to replace the Teaching Tech calibration pattern.
+
+Future improvements planned:
+
+- Continuous serpentine path.
+- Double-line raster.
+- Faster fault identification.
+- Coordinate-referenced diagnostics.
+
+## Outcome
+
+First layer calibration considered complete.
+
+Remaining tuning can be performed through minor probe offset adjustments rather than mechanical correction.
+
+Commissioning can now proceed to normal print validation.

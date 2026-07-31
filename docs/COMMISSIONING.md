@@ -352,3 +352,31 @@ calibration/rotation.cfg
 - Input Shaper
 - Performance optimisation
 - ABS validation
+
+## Stage 6 — First Layer Calibration ✅ COMPLETE
+
+### Tasks Completed
+
+- [x] Configure hotend cooling fan
+- [x] Configure part cooling fan
+- [x] Re-run hotend PID calibration
+- [x] Resolve heat creep blockage
+- [x] Configure automatic heatsink fan control
+- [x] Calibrate probe Z offset
+- [x] Perform screw tilt adjustment
+- [x] Re-run bed mesh calibration
+- [x] Save probe offset using SAVE_CONFIG
+- [x] Validate first layer across full printable area
+
+### Result
+
+Printer now produces a consistent first layer across the majority of the build area.
+
+Residual variation is minimal and suitable for normal printing.
+
+Future calibration should only require occasional:
+
+- PROBE_CALIBRATE
+- BED_MESH_CALIBRATE
+
+without significant mechanical adjustment.
