@@ -148,3 +148,63 @@ The current verified state of the printer is recorded separately in `COMMISSIONI
 - Perform PLA first-layer validation.
 - Print the first dimensional calibration cube.
 - Begin extrusion and print quality tuning.
+
+# Session 6 – First Layer Investigation
+
+## Objective
+Investigate inconsistent first layer despite successful bed mesh generation.
+
+## Initial Symptoms
+- First layer appeared acceptable near X=0.
+- Centre slightly over-squashed.
+- Prints at X≈200 appeared to fail, initially believed to be nozzle contacting the bed.
+
+## Investigation Performed
+- Verified probe offsets were correct.
+- Confirmed bed mesh probed the expected physical locations.
+- Verified active mesh using `BED_MESH_OUTPUT`.
+- Confirmed mesh compensation was active using manual paper tests across the X axis.
+- Confirmed glass bed had not moved between probing and printing.
+
+## Root Cause Found
+Further investigation showed the nozzle was **not** contacting the bed.
+
+Instead:
+- No filament was being extruded.
+- Filament could not be manually pushed through the hotend at 220°C.
+- Filament also could not be withdrawn.
+- Heat sink cooling fan was found not to be operating.
+
+The hotend cooling fan had been connected to FAN1 on the SKR Mini E3 V3 but no Klipper fan configuration had yet been created.
+
+This resulted in heat creep during repeated calibration sessions, causing PLA to soften inside the heatbreak and Capricorn tube.
+
+## Corrective Actions
+- Removed hotend assembly.
+- Cleared filament blockage.
+- Reassembled hotend.
+- Configured Klipper heater fan.
+- Configured part cooling fan.
+
+## New Fan Configuration
+
+```ini
+[heater_fan heatbreak_cooling_fan]
+pin: PC7
+heater: extruder
+heater_temp: 50.0
+fan_speed: 1.0
+
+[fan]
+pin: PB15
+```
+
+## Status
+✔ Heater fan now automatically operates above 50°C.
+
+✔ Part cooling fan responds correctly to M106/M107.
+
+Next session:
+- Verify reliable manual extrusion.
+- Re-run bed mesh.
+- Resume first layer commissioning.

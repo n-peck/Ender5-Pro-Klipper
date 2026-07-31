@@ -67,3 +67,28 @@ Measured offsets
 X = -44
 
 Y = -9
+
+## Fan Assignments
+
+| Function | Header | MCU Pin | Configuration |
+|----------|--------|---------|---------------|
+| Part Cooling Fan | FAN2 | PB15 | `[fan]` |
+| Hotend Heatsink Fan | FAN1 | PC7 | `[heater_fan heatbreak_cooling_fan]` |
+| Spare | FAN0 | PC6 | Unused |
+
+### Heater Fan Configuration
+
+```ini
+[heater_fan heatbreak_cooling_fan]
+pin: PC7
+heater: extruder
+heater_temp: 50.0
+fan_speed: 1.0
+```
+
+### Part Cooling Fan
+
+```ini
+[fan]
+pin: PB15
+```

@@ -209,6 +209,19 @@ Existing calibration confirmed.
 
 ---
 
+## Hotend Cooling Verification
+
+Before any calibration involving a heated nozzle:
+
+- Heat nozzle to 60°C.
+- Confirm heatsink fan starts automatically.
+- Heat to printing temperature.
+- Confirm manual extrusion is possible.
+- Cool hotend.
+- Verify heatsink fan remains running until temperature falls below 50°C.
+
+Failure of the heatsink fan can cause heat creep during extended calibration sessions, leading to filament swelling inside the heatbreak and false first-layer diagnosis.
+
 ## Hotend PID
 
 ### Configuration
