@@ -33,8 +33,8 @@
 - [x] Heated bed PID tuned
 - [x] Bed mesh generated
 - [x] Extruder rotation distance verified
-- [ ] PLA first-layer validation
-- [ ] Calibration cube
+- [x] PLA first-layer validated
+- [x] Calibration cube printed
 - [ ] Flow calibration
 - [ ] Temperature tower
 - [ ] Retraction calibration

@@ -286,3 +286,184 @@ First layer calibration considered complete.
 Remaining tuning can be performed through minor probe offset adjustments rather than mechanical correction.
 
 Commissioning can now proceed to normal print validation.
+
+# Session 7 - Z-Axis Calibration Root Cause Analysis
+
+**Date:** 2 August 2026
+
+## Objectives
+
+- Resolve persistent dimensional inaccuracies in Z.
+- Verify mechanical configuration following SKR Mini E3 V3 migration.
+- Complete investigation into first layer and layer height issues.
+
+---
+
+## Summary
+
+Following successful first layer calibration during Session 6, a 20 mm XYZ calibration cube revealed a major dimensional error.
+
+### Observed behaviour
+
+- First layer printed successfully.
+- Print progressively scraped across previous layers.
+- Extruder clicked and nozzle dragged through printed material.
+- 20 mm calibration cube measured approximately 11 mm tall.
+
+This indicated the problem was no longer related to first layer calibration, bed mesh or probe offset, but instead affected every subsequent Z move.
+
+---
+
+## Investigation
+
+The following checks were completed:
+
+### Stepper configuration
+
+Current configuration:
+
+```ini
+microsteps: 16
+rotation_distance: 8
+```
+
+This matched the generic BTT SKR Mini E3 V3 reference configuration.
+
+---
+
+### Mechanical verification
+
+A physical movement test was performed.
+
+Procedure:
+
+```
+G28
+G92 Z0
+G1 Z40 F300
+```
+
+Results:
+
+- Leadscrew rotated exactly five complete revolutions.
+- Bed travelled approximately 20 mm.
+
+Measured travel:
+
+```
+20 mm / 5 revolutions = 4 mm per revolution
+```
+
+This conclusively proved the installed leadscrew has a **4 mm lead**.
+
+---
+
+## Root Cause
+
+The installed Ender 5 Pro Z leadscrew provides:
+
+- 4 mm travel per revolution
+
+However Klipper was configured for:
+
+```
+rotation_distance: 8
+```
+
+As a result every commanded Z movement was approximately doubled internally while the mechanics only moved half the expected distance.
+
+Consequences included:
+
+- 20 mm cube printed approximately 11 mm tall.
+- Progressive nozzle scraping.
+- Incorrect layer spacing.
+- Bed mesh compensation applied using incorrect Z scaling.
+- Difficult first layer tuning despite mechanically level bed.
+
+---
+
+## Resolution
+
+Updated Z configuration:
+
+```ini
+rotation_distance: 4
+```
+
+Following this change:
+
+- Z travel matched commanded movement.
+- Probe calibration repeated.
+- Bed tramming repeated using SCREWS_TILT_CALCULATE.
+- Bed mesh regenerated.
+- SAVE_CONFIG updated successfully.
+
+---
+
+## Bed Tramming
+
+Final screw adjustment:
+
+| Screw | Adjustment |
+|-------|------------|
+| Xmin Ymin | Base |
+| Xmax Ymin | 3 minutes CCW |
+| Xmax Ymax | 5 minutes CCW |
+| Xmin Ymax | 3 minutes CCW |
+
+Reference:
+
+Counter-clockwise (viewed from above)
+
+- moves bed away from nozzle
+- compresses spring
+- tightens adjustment wheel
+
+---
+
+## Final Bed Mesh
+
+Mesh statistics:
+
+```
+Average: +0.01 mm
+Range:
+Minimum -0.051 mm
+Maximum +0.081 mm
+Total variation 0.132 mm
+```
+
+This represents approximately a 50% improvement over previous measurements and is considered an excellent result for a stock Ender 5 Pro glass bed.
+
+---
+
+## Lessons Learned
+
+- Never assume board manufacturer example configurations match the installed printer mechanics.
+- Always verify actual mechanical travel experimentally.
+- Rotation distance should always be validated after controller replacement.
+- Mechanical measurement is more reliable than reference configuration examples.
+- Probe calibration and bed mesh should always be repeated after changing Z kinematics.
+
+---
+
+## Current Status
+
+### Completed
+
+- ✓ Hotend cooling configuration
+- ✓ Heat creep issue resolved
+- ✓ PID recalibrated
+- ✓ Probe calibration completed
+- ✓ Screw tilt calibration completed
+- ✓ Bed mesh calibration completed
+- ✓ First layer calibration completed
+- ✓ Root cause of incorrect Z motion identified
+
+### Next Steps
+
+- Verify dimensional accuracy using 20 mm XYZ cube.
+- Calibrate extrusion multiplier / flow.
+- Calibrate pressure advance.
+- Calibrate input shaping.
+- Begin print quality optimisation.
