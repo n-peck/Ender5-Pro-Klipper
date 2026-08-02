@@ -64,3 +64,12 @@ origin = https://github.com/KlipperScreen/KlipperScreen.git
 path = /home/nathan/KlipperScreen
 type = git_repo
 
+[power printer]
+type = gpio
+pin = gpiochip0/gpio17
+initial_state = on
+off_when_shutdown = False
+locked_while_printing = True
+restart_klipper_when_powered = True
+on_when_job_queued = True
+

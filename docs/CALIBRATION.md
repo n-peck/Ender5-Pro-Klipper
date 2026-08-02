@@ -193,3 +193,13 @@ is stored in:
 ```
 calibration/rotation.cfg
 ```
+
+# Printer Power Management
+
+- Raspberry Pi GPIO17 configured for PSU relay control
+- Automatic relay activation during Raspberry Pi boot
+- Moonraker power device configured
+- Printer power controllable directly from Mainsail
+- Verified automatic SKR startup after Raspberry Pi reboot
+
+**Status:** ✅ Complete

@@ -467,3 +467,46 @@ This represents approximately a 50% improvement over previous measurements and i
 - Calibrate pressure advance.
 - Calibrate input shaping.
 - Begin print quality optimisation.
+
+# Session 8 – System Integration
+
+## Raspberry Pi GPIO Power Control
+
+Migrated printer PSU control from a Klipper `output_pin` implementation to Moonraker Power Devices.
+
+**Reason**
+
+Using a Klipper GPIO output can successfully switch the printer PSU off, but once the SKR loses power Klipper immediately enters a shutdown state and can no longer reassert the GPIO to restore power.
+
+Moonraker operates independently of the printer MCU and therefore remains capable of controlling Raspberry Pi GPIOs even when the printer is powered down.
+
+## Raspberry Pi Host MCU
+
+Configured the Raspberry Pi as a secondary Klipper MCU to enable future GPIO expansion.
+[mcu rpi]
+serial: /tmp/klipper_host_mcu
+
+The host MCU is retained for future use, although printer power is now managed by Moonraker.
+
+## Automatic Power-On
+
+Configured Raspberry Pi firmware to assert GPIO17 during boot:
+gpio=17=op,dh
+
+This energises the PSU relay before Moonraker or Klipper start, ensuring the SKR is available during system startup.
+
+## Moonraker Power Device
+
+Configured a GPIO power device in `moonraker.conf` using GPIO17.
+
+Benefits:
+
+- Native power button in Mainsail
+- Reliable remote power on/off
+- Printer can be powered on from a fully-off state
+- Compatible with future Home Assistant automation
+- Prevents Klipper shutdown from leaving the printer inaccessible
+
+## Outcome
+
+Printer power is now fully integrated into Moonraker and controlled through the Mainsail UI. This replaces the earlier Klipper output-pin implementation.

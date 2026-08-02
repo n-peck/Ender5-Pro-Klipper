@@ -92,3 +92,16 @@ fan_speed: 1.0
 [fan]
 pin: PB15
 ```
+
+## Raspberry Pi
+
+### GPIO Assignments
+
+| GPIO | Function | Status |
+|------|----------|--------|
+| GPIO17 | Printer PSU relay | Configured |
+
+GPIO17 is asserted high during Raspberry Pi boot using:
+gpio=17=op,dh
+
+Moonraker manages relay operation once the system has started.
