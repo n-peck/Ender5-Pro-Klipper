@@ -380,3 +380,58 @@ Future calibration should only require occasional:
 - BED_MESH_CALIBRATE
 
 without significant mechanical adjustment.
+
+## Dimensional Accuracy Verification
+
+**Status:** ✅ Complete
+
+### Test Model
+
+Teaching Tech 20 mm XYZ Calibration Cube
+
+### Results
+
+| Axis |   Target | Measured |    Error |
+| ---- | -------: | -------: | -------: |
+| X    | 20.00 mm | 19.83 mm | -0.17 mm |
+| Y    | 20.00 mm | 19.99 mm | -0.01 mm |
+| Z    | 20.00 mm | 20.18 mm | +0.18 mm |
+
+### Assessment
+
+Following correction of the Z-axis `rotation_distance`, dimensional accuracy is now within acceptable tolerances for a commissioned FDM printer.
+
+No software axis compensation has been applied.
+
+---
+
+## Flow Calibration
+
+**Status:** ✅ Complete
+
+### Test Model
+
+Teaching Tech Single-Wall Flow Calibration Cube
+
+### Results
+
+| Target Wall |     Measured |
+| ----------- | -----------: |
+| 0.40 mm     | 0.40–0.41 mm |
+
+### Assessment
+
+Measured wall thickness matched the intended extrusion width within measurement tolerance.
+
+No adjustment to the extrusion multiplier was required.
+
+### Commissioning Outcome
+
+The printer has now demonstrated:
+
+* Correct motion scaling
+* Correct extruder calibration
+* Correct dimensional accuracy
+* Correct extrusion flow
+
+Flow calibration is therefore considered complete.

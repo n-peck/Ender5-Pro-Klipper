@@ -130,10 +130,36 @@ The current verified state of the printer is recorded separately in `COMMISSIONI
 - Updated Klipper from v0.13.0-707 to v0.13.0-708.
 - Created a Git checkpoint before firmware updates.
 
+### Extruder Rotation Distance Verification
+
+Following PID calibration, the extruder rotation distance was verified to confirm that commanded extrusion matched physical filament movement.
+
+Due to Klipper's manual extrusion safety limit, the verification was performed using two consecutive 50 mm extrusion commands.
+
+| Parameter             |                     Value |
+| --------------------- | ------------------------: |
+| Filament              | Elegoo PLA+ Black 1.75 mm |
+| Initial Mark Position |                  120.0 mm |
+| Commanded Extrusion   |                  100.0 mm |
+| Remaining Distance    |                   20.0 mm |
+| Actual Extrusion      |                  100.0 mm |
+
+**Result:** ✅ PASS
+
+The configured `rotation_distance` was confirmed to be correct. No adjustment was required.
+
+The calibrated value is stored in:
+
+```text
+calibration/rotation.cfg
+```
+
+This completes commissioning of the extruder drive system and provides a verified baseline for subsequent flow calibration, pressure advance tuning and print quality optimisation.
+
 ### Engineering Decisions
 
 - Confirmed that calibration values should remain separate from permanent hardware configuration.
-- Decided to move `rotation_distance` into the `calibration` configuration alongside probe offset, PID values and pressure advance.
+- Decided to move `rotation_distance` into the calibration configuration alongside probe offset, PID values and pressure advance.
 - Confirmed that calibration files should be considered disposable and regenerated whenever hardware changes occur.
 
 ### Lessons Learned
@@ -142,12 +168,13 @@ The current verified state of the printer is recorded separately in `COMMISSIONI
 - `[bed_mesh]` must remain a single atomic configuration because mesh geometry and generated mesh values share the same section.
 - The `SAVE_CONFIG` block should never be edited manually. If corruption occurs, remove the entire generated block and allow Klipper to recreate it.
 - Separating permanent hardware configuration from generated calibration values produces a much cleaner and more maintainable repository structure.
+- Klipper limits manual extrusion commands to 50 mm as a safety feature; a standard 100 mm extrusion calibration should therefore be performed using two consecutive 50 mm extrusion moves.
 
 ### Next Session
 
-- Perform PLA first-layer validation.
-- Print the first dimensional calibration cube.
-- Begin extrusion and print quality tuning.
+- Perform first-layer validation across the full build area.
+- Optimise probe calibration, bed mesh and Z offset.
+- Begin dimensional accuracy verification once a consistent first layer has been achieved.
 
 # Session 6 – First Layer Calibration Completed
 
@@ -468,45 +495,181 @@ This represents approximately a 50% improvement over previous measurements and i
 - Calibrate input shaping.
 - Begin print quality optimisation.
 
-# Session 8 – System Integration
+# Session 8 — 2026-08-02
+
+## Objectives
+
+* Integrate printer power management into Moonraker.
+* Validate dimensional accuracy following Z-axis calibration.
+* Verify extrusion flow accuracy.
+* Continue commissioning towards production-ready operation.
+
+## Completed
+
+* Configured Raspberry Pi Host MCU.
+* Configured automatic PSU relay activation during Raspberry Pi startup.
+* Migrated printer power management from a Klipper `output_pin` to a Moonraker Power Device.
+* Added native printer power controls to Mainsail.
+* Verified automatic printer power-up after Raspberry Pi reboot.
+* Verified dimensional accuracy using the Teaching Tech 20 mm XYZ calibration cube.
+* Confirmed the corrected Z-axis `rotation_distance` resolved the previous height error.
+* Completed single-wall flow calibration.
+* Confirmed extrusion flow accuracy without requiring adjustment.
 
 ## Raspberry Pi GPIO Power Control
 
-Migrated printer PSU control from a Klipper `output_pin` implementation to Moonraker Power Devices.
+### Overview
 
-**Reason**
+Printer PSU control was migrated from a Klipper `output_pin` implementation to Moonraker Power Devices.
 
-Using a Klipper GPIO output can successfully switch the printer PSU off, but once the SKR loses power Klipper immediately enters a shutdown state and can no longer reassert the GPIO to restore power.
+### Engineering Rationale
 
-Moonraker operates independently of the printer MCU and therefore remains capable of controlling Raspberry Pi GPIOs even when the printer is powered down.
+Although Klipper can drive Raspberry Pi GPIOs, once printer power is removed the printer MCU immediately disconnects, placing Klipper into a shutdown state. This prevents Klipper from reasserting the relay to restore power.
 
-## Raspberry Pi Host MCU
+Moonraker operates independently of the printer MCU and therefore remains capable of controlling Raspberry Pi GPIOs regardless of printer power state.
 
-Configured the Raspberry Pi as a secondary Klipper MCU to enable future GPIO expansion.
+### Raspberry Pi Host MCU
+
+Configured a Linux Host MCU for future GPIO expansion.
+
+```ini
 [mcu rpi]
 serial: /tmp/klipper_host_mcu
+```
 
-The host MCU is retained for future use, although printer power is now managed by Moonraker.
+Although the Host MCU is available for future functionality, printer power is now managed directly by Moonraker.
 
-## Automatic Power-On
+### Automatic Power-On
 
 Configured Raspberry Pi firmware to assert GPIO17 during boot:
+
+```text
 gpio=17=op,dh
+```
 
-This energises the PSU relay before Moonraker or Klipper start, ensuring the SKR is available during system startup.
+This energises the PSU relay before Moonraker or Klipper start, ensuring the SKR controller is powered during system startup.
 
-## Moonraker Power Device
+### Moonraker Integration
 
-Configured a GPIO power device in `moonraker.conf` using GPIO17.
+Configured a Moonraker GPIO Power Device using GPIO17.
 
-Benefits:
+Benefits include:
 
-- Native power button in Mainsail
-- Reliable remote power on/off
-- Printer can be powered on from a fully-off state
-- Compatible with future Home Assistant automation
-- Prevents Klipper shutdown from leaving the printer inaccessible
+* Native printer power controls within Mainsail.
+* Reliable remote printer power-on and power-off.
+* Printer can be powered on from a completely de-energised state.
+* Ready for future Home Assistant integration.
+* Eliminates dependency on Klipper for PSU control.
 
-## Outcome
+### Result
 
-Printer power is now fully integrated into Moonraker and controlled through the Mainsail UI. This replaces the earlier Klipper output-pin implementation.
+**PASS**
+
+Power management is now fully integrated into Moonraker and verified through successful cold boot and shutdown testing.
+
+---
+
+## Dimensional Accuracy Verification
+
+Following correction of the Z-axis `rotation_distance`, the Teaching Tech 20 mm XYZ calibration cube was reprinted.
+
+### Results
+
+| Axis |  Nominal | Measured |    Error |
+| ---- | -------: | -------: | -------: |
+| X    | 20.00 mm | 19.83 mm | -0.17 mm |
+| Y    | 20.00 mm | 19.99 mm | -0.01 mm |
+| Z    | 20.00 mm | 20.18 mm | +0.18 mm |
+
+### Result
+
+**PASS**
+
+The previous issue producing approximately half-height parts was completely resolved by correcting the Z-axis `rotation_distance`.
+
+Overall dimensional accuracy is considered acceptable for a commissioned FDM printer. No software axis compensation has been applied, as the remaining deviations fall within expected printing tolerances.
+
+---
+
+## Flow Calibration
+
+A Teaching Tech single-wall flow calibration cube was printed to verify extrusion accuracy.
+
+### Results
+
+| Target Wall Thickness |     Measured |
+| --------------------: | -----------: |
+|               0.40 mm | 0.40–0.41 mm |
+
+### Result
+
+**PASS**
+
+Measured wall thickness matched the intended extrusion width within measurement tolerance.
+
+No flow multiplier adjustment was required.
+
+---
+
+## Engineering Assessment
+
+The printer has now successfully demonstrated:
+
+* Correct X, Y and Z motion scaling.
+* Correct extruder calibration.
+* Accurate first-layer performance.
+* Correct single-wall extrusion.
+* Reliable dimensional accuracy.
+* Fully integrated Moonraker power management.
+* Stable system startup and shutdown behaviour.
+
+The printer is now considered mechanically commissioned and suitable for general-purpose printing. Remaining commissioning work is focused on print quality optimisation rather than hardware calibration.
+
+---
+
+## Engineering Decisions
+
+* Moonraker Power Devices adopted as the permanent PSU control solution.
+* Raspberry Pi GPIO17 reserved for printer power relay control.
+* Retained the Linux Host MCU for future GPIO expansion and accessory control.
+* No axis compensation applied following dimensional verification.
+* No flow multiplier adjustment required following flow calibration.
+
+---
+
+## Lessons Learned
+
+* Printer power should be managed independently of the printer MCU to allow recovery from a fully powered-off state.
+* Raspberry Pi firmware GPIO initialisation provides a reliable method of energising external relays before application startup.
+* Mechanical calibration should always be verified before considering software compensation.
+* Flow calibration should only be adjusted when repeated measurements consistently deviate from the intended extrusion width.
+
+---
+
+## Commissioning Status
+
+The following commissioning activities are now complete:
+
+* ✅ Motion system verification
+* ✅ Endstop verification
+* ✅ Z-axis calibration
+* ✅ Extruder rotation calibration
+* ✅ Probe calibration
+* ✅ Probe accuracy verification
+* ✅ Screw tilt adjustment
+* ✅ Bed mesh calibration
+* ✅ First-layer validation
+* ✅ PID tuning
+* ✅ Dimensional accuracy verification
+* ✅ Flow calibration
+* ✅ Moonraker power management integration
+
+---
+
+## Next Session
+
+* Print a PLA temperature tower.
+* Perform retraction tuning.
+* Print a Benchy as the primary commissioning validation model.
+* Complete a tolerance test to verify dimensional repeatability and part fit.
+* Begin pressure advance tuning.

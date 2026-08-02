@@ -203,3 +203,65 @@ calibration/rotation.cfg
 - Verified automatic SKR startup after Raspberry Pi reboot
 
 **Status:** ✅ Complete
+
+## Dimensional Accuracy Calibration
+
+### Objective
+
+Verify that the printer produces dimensionally accurate parts following mechanical calibration.
+
+### Test Model
+
+Teaching Tech 20 mm XYZ Calibration Cube
+
+### Results
+
+| Axis |   Target | Measured |
+| ---- | -------: | -------: |
+| X    | 20.00 mm | 19.83 mm |
+| Y    | 20.00 mm | 19.99 mm |
+| Z    | 20.00 mm | 20.18 mm |
+
+### Outcome
+
+PASS
+
+The previous Z-axis scaling error was resolved following correction of the Z-axis `rotation_distance`.
+
+Measured dimensions are considered acceptable without applying software compensation.
+
+---
+
+## Flow Calibration
+
+### Objective
+
+Verify that the configured extrusion rate produces the intended wall thickness.
+
+### Test Model
+
+Teaching Tech Single-Wall Flow Calibration Cube
+
+### Results
+
+Target wall thickness:
+
+```
+0.40 mm
+```
+
+Measured wall thickness:
+
+```
+0.40–0.41 mm
+```
+
+### Outcome
+
+PASS
+
+Measured wall thickness matched the expected extrusion width within measurement tolerance.
+
+No flow multiplier adjustment was required.
+
+These results confirm that the previously calibrated extruder `rotation_distance` and extrusion settings remain correct.

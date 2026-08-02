@@ -144,3 +144,25 @@ Returned safe_z_home to the physical bed centre (110,110).
 Recalibrated Z probe offset:
 
 z_offset = 0.108
+
+## Session 8
+
+### Commissioning Progress
+
+Completed dimensional verification following correction of the Z-axis motion calibration.
+
+* Teaching Tech 20 mm XYZ calibration cube completed.
+* Verified dimensional accuracy:
+
+  * X = 19.83 mm
+  * Y = 19.99 mm
+  * Z = 20.18 mm
+* No software axis compensation required.
+
+Completed extrusion flow verification.
+
+* Teaching Tech single-wall flow calibration cube completed.
+* Wall thickness measured 0.40–0.41 mm.
+* No flow multiplier adjustment required.
+
+These results confirm the printer is mechanically calibrated and suitable for progression to print quality optimisation.
