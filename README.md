@@ -17,9 +17,10 @@
 - [x] Bed heater PID
 - [x] Hotend PID
 - [x] Bed mesh
+- [X] Extruder rotation distance
+- [X] Pressure Advance
 
 ### Remaining Commissioning
 
-- [ ] Extruder rotation distance
-- [ ] Pressure Advance
+
 - [ ] Input Shaper

@@ -69,3 +69,27 @@ The format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 - Confirmed final Safe Z Home behaviour using nozzle coordinates.
 - Verified probe calibration remained valid following configuration changes.
+
+## Session 9
+
+### Added
+
+- Pressure Advance calibration
+- PREHEAT_PLA macro
+- Direct Moonraker upload from PrusaSlicer
+- Improved START_PRINT sequence
+
+### Changed
+
+- Created dedicated Klipper PrusaSlicer profile
+- Removed unsupported Marlin G-Code commands
+- START_PRINT now waits for bed temperature before homing
+- Flow calibration completed
+
+### Calibrations
+
+Pressure Advance:
+0.055
+
+Flow:
+1.00

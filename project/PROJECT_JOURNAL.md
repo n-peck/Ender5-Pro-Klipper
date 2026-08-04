@@ -673,3 +673,109 @@ The following commissioning activities are now complete:
 * Print a Benchy as the primary commissioning validation model.
 * Complete a tolerance test to verify dimensional repeatability and part fit.
 * Begin pressure advance tuning.
+
+# Session 9 - Print Accuracy Calibration
+
+## Objectives
+
+Following completion of printer commissioning, this session focused on print accuracy, extrusion tuning and workflow improvements.
+
+## Completed
+
+### Pressure Advance
+
+Pressure Advance was calibrated using Klipper's `TUNING_TOWER`.
+
+Initial test:
+- START=0.000
+- FACTOR=0.0025
+
+The initial range produced minimal visible change, indicating the test conditions were not sufficiently stressing the extrusion system.
+
+A second test was performed using a narrower range:
+SET_VELOCITY_LIMIT ACCEL=3000 SQUARE_CORNER_VELOCITY=5
+
+TUNING_TOWER COMMAND=SET_PRESSURE_ADVANCE PARAMETER=ADVANCE START=0.03 FACTOR=0.001
+
+The first signs of over-compensation (small gap after corners) appeared at approximately 25.2mm.
+
+Calculated Pressure Advance:
+0.030 + (25.2 × 0.001) = 0.0552
+
+Final configured value:
+pressure_advance: 0.055
+
+---
+
+### Flow Calibration
+
+Flow calibration was completed using a single wall cube.
+
+Nominal wall width:
+0.40mm
+
+Measured wall thickness:
+
+- 0.40mm
+- 0.41mm
+
+Measurements were taken at three locations on each wall.
+
+Results were within measurement tolerance and no adjustment to extrusion multiplier was required.
+
+Final value:
+Extrusion Multiplier = 1.00
+
+---
+
+### PrusaSlicer
+
+A dedicated Klipper printer profile was created.
+
+Changes include:
+
+- Klipper G-Code flavour
+- Direct Moonraker upload
+- START_PRINT macro
+- END_PRINT macro
+- Removed Marlin acceleration commands (M201/M203/M205)
+
+Printing can now be started directly from PrusaSlicer without exporting G-Code manually.
+
+---
+
+### START_PRINT improvements
+
+START_PRINT now:
+
+- Loads saved bed mesh
+- Starts heating bed
+- Waits for bed temperature
+- Homes printer after bed reaches operating temperature
+- Heats nozzle to print temperature
+- Continues with purge sequence
+
+This ensures homing is always performed with the printer at thermal equilibrium.
+
+---
+
+### Macros
+
+Added:
+
+- PREHEAT_PLA
+
+Future additions:
+
+- PREHEAT_PETG
+- LOAD_FILAMENT
+- UNLOAD_FILAMENT
+- COOL_DOWN
+
+---
+
+## Outcome
+
+Printer commissioning is now considered complete.
+
+The printer has transitioned from commissioning into performance tuning and production readiness.

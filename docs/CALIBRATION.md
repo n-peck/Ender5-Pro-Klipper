@@ -265,3 +265,46 @@ Measured wall thickness matched the expected extrusion width within measurement 
 No flow multiplier adjustment was required.
 
 These results confirm that the previously calibrated extruder `rotation_distance` and extrusion settings remain correct.
+
+# Pressure Advance
+
+Method:
+Klipper TUNING_TOWER
+
+Final value:
+pressure_advance: 0.055
+
+Calibration performed using:
+SET_VELOCITY_LIMIT ACCEL=3000 SQUARE_CORNER_VELOCITY=5
+
+TUNING_TOWER COMMAND=SET_PRESSURE_ADVANCE PARAMETER=ADVANCE START=0.03 FACTOR=0.001
+
+Over-compensation first observed at approximately 25.2mm.
+
+Pressure Advance calculated as:
+0.030 + (25.2 × 0.001)
+
+Final configured value:
+0.055
+
+---
+
+# Flow Calibration
+
+Method:
+
+Single wall cube
+
+Target wall thickness:
+0.40mm
+
+Measured:
+0.40
+0.41
+
+Average results within tolerance.
+
+No extrusion multiplier adjustment required.
+
+Final extrusion multiplier:
+1.00
