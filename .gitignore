@@ -5,6 +5,7 @@
 *.bkp
 *.tmp
 *.old
+*.zip
 
 # Printer data folders you don't want in Git
 printer_data/logs/
@@ -24,3 +25,6 @@ __pycache__/
 
 #AI Chat context info
 project/context/
+
+#printer.cfg timestamped SAVE_CONFIG Backups
+printer-*.cfg

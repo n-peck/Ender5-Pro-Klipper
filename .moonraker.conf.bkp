@@ -73,3 +73,13 @@ locked_while_printing = True
 restart_klipper_when_powered = True
 on_when_job_queued = True
 
+[update_manager moonraker-obico]
+type = git_repo
+path = /home/nathan/moonraker-obico
+origin = https://github.com/TheSpaghettiDetective/moonraker-obico.git
+env = /home/nathan/moonraker-obico/../moonraker-obico-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+managed_services = 
+	moonraker-obico
+
